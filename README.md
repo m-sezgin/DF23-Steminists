@@ -1,2 +1,2 @@
-# DF23-Steminists
-ASA Five College Data Fest '23 Steminist team repository
+# DF23-data-pests
+ASA Five College Data Fest '23 data pests team repository
