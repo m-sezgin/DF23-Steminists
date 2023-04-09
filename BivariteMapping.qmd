@@ -132,6 +132,9 @@ finalPlot <- ggdraw() +
 finalPlot
 ```
 
+```{r}
+saveRDS(finalPlot, "final-plot.Rds")
+```
 
 
 
