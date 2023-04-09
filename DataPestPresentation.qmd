@@ -5,14 +5,18 @@ format:
     #colortheme: crane
 ---
 
-## Bivarite Choropleth Map
+## Percentage of Secondary Schools in Which Teachers Tried to Increase Student Knowledge on Pregnancy Prevention
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see https://quarto.org/docs/presentations/.
+```{r}
+library(rio)
+map_plot <- import("final-plot.Rds")
+map_plot
+```
+
 
 ## Proportion of Questions Taken On By Lawyer In Florida Varies by Category
 
 ```{r}
-library(rio)
 prop_plot <- import("prop-plot.Rds")
 prop_plot
 ```
