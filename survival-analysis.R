@@ -51,13 +51,15 @@ coef_tbl <- coef_tbl |>
   mutate(lower = coef_vals - 1.96*sds,
          upper = coef_vals + 1.96*sds) 
 
-# Health + Disability and Individual Rights Questions Take Longer
+# Title: Health + Disability and Individual Rights Questions Take Longer
 # to Get Taken On By Lawyer in Florida
-ggplot(coef_tbl, aes(x = category, y = coef_val)) +
+hazard_plot <- ggplot(coef_tbl, aes(x = category, y = coef_val)) +
   geom_point() +
   theme_bw() +
   geom_errorbar(aes(ymin = lower, ymax = upper)) +
   geom_hline(yintercept=1, linetype='dotted', col = 'red') +
   labs(x = "Question Category", y = "Hazard Ratio") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+saveRDS(hazard_plot, "hazard-plot.Rds")
                                 
