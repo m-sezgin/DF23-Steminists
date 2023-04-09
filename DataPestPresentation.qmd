@@ -9,17 +9,19 @@ format:
 
 Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see https://quarto.org/docs/presentations/.
 
-## Proportional Hazards Plot
-
-When you click the **Render** button a document will be generated that includes:
-
--   Content authored with markdown
--   Output from executable code
-
-## Step 3: ???? Step 4: Profit
-
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Proportion of Questions Taken On By Lawyer In Florida Varies by Category
 
 ```{r}
-1 + 1
+library(rio)
+prop_plot <- import("prop-plot.Rds")
+prop_plot
 ```
+
+## Health & Disability and Individual Rights Questions Take Longer to Get Taken On By Lawyer in Florida
+
+```{r}
+hazard_plot <- import("hazard-plot.Rds")
+hazard_plot
+```
+
+
