@@ -113,10 +113,10 @@ map <- ggplot() +
   geom_sf(data = data, mapping = aes(fill = bi_class), color = "white", size = 0.1, show.legend = FALSE) +
   bi_scale_fill(pal = "DkViolet2", dim = 3) +
   # labs(
-  #   title = "Num Questions and Pregnancy Education",
-  #   subtitle = "Gray Pink (GrPink) Palette"
+  #   subtitle = "Percentage of Secondary Schools in Which Teachers Tried to Increase Student Knowledge on Pregnancy Prevention"
   # ) +
-  bi_theme() + labs(caption = "Percentage of Secondary Schools in Which Teachers Tried to Increase Student Knowledge on Pregnancy Prevention")
+  bi_theme()
+# + labs(caption = "Percentage of Secondary Schools in Which Teachers Tried to Increase Student Knowledge on Pregnancy Prevention")
 
 legend <- bi_legend(pal = "DkViolet2",
                     dim = 3,
@@ -127,7 +127,7 @@ legend <- bi_legend(pal = "DkViolet2",
 # combine map with legend
 finalPlot <- ggdraw() +
   draw_plot(map, 0, 0, 1, 1) +
-  draw_plot(legend, 0.01, .05, 0.3, 0.3)
+  draw_plot(legend, 0.01, .01, 0.3, 0.3)
 
 finalPlot
 ```
