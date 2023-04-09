@@ -27,12 +27,37 @@ questions <- questions |>
          delta = 1
         )
 
-glmme_q_times <- glmer(difference_days ~ state_abbr + subcategory +
-       state_abbr*sub_categories + (1 | taken_by_attorney_uno),
-     data = questions, family = exponential(link = log))
+# glmme_q_times <- glmer(difference_days ~ state_abbr + subcategory +
+#        state_abbr*sub_categories + (1 | taken_by_attorney_uno),
+#      data = questions, family = exponential(link = log))
                                 
-mod <- survreg(Surv(difference_days, delta) ~ subcategory,
-               data = questions |> filter(state_abbr == "TX"),
+mod <- survreg(Surv(difference_days, delta) ~ category,
+               data = questions |> filter(state_abbr == "FL"),
                cluster = taken_by_attorney_uno, dist = "exponential")
 summary(mod)
+
+convert_coef <- function(coef) {
+  exp(mod$coefficients[[1]] + mod$coefficients[[coef]])/exp(mod$coefficients[[1]])
+}
+
+
+coef_vals <- c(1, map_dbl(2:10, ~ convert_coef(.x)))
+sds <- map_dbl(1:10, ~ summary(mod)$table[,2][[.x]])
+cats <- sort(unique(questions$category))
+
+coef_tbl <- tibble(coef_val = coef_vals, sds = sds, category = cats)
+
+coef_tbl <- coef_tbl |>
+  mutate(lower = coef_vals - 1.96*sds,
+         upper = coef_vals + 1.96*sds) 
+
+# Health + Disability and Individual Rights Questions Take Longer
+# to Get Taken On By Lawyer in Florida
+ggplot(coef_tbl, aes(x = category, y = coef_val)) +
+  geom_point() +
+  theme_bw() +
+  geom_errorbar(aes(ymin = lower, ymax = upper)) +
+  geom_hline(yintercept=1, linetype='dotted', col = 'red') +
+  labs(x = "Question Category", y = "Hazard Ratio") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
                                 
