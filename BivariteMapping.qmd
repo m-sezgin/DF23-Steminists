@@ -1,0 +1,164 @@
+---
+title: "Bivarite Mapping"
+format: html
+editor: source
+---
+
+```{r}
+# Load packages
+library(here)
+library(rio)
+library(tidyverse)
+library(biscale)
+library(ggplot2)
+library(cowplot)
+library(sf)
+```
+
+```{r}
+# create classes
+data <- bi_class(stl_race_income, x = pctWhite, y = medInc, style = "quantile", dim = 3)
+
+# create map
+map <- ggplot() +
+  geom_sf(data = data, mapping = aes(fill = bi_class), color = "white", size = 0.1, show.legend = FALSE) +
+  bi_scale_fill(pal = "GrPink", dim = 3) +
+  labs(
+    title = "Race and Income in St. Louis, MO",
+    subtitle = "Gray Pink (GrPink) Palette"
+  ) +
+  bi_theme()
+
+legend <- bi_legend(pal = "GrPink",
+                    dim = 3,
+                    xlab = "Higher % White ",
+                    ylab = "Higher Income ",
+                    size = 8)
+
+# combine map with legend
+finalPlot <- ggdraw() +
+  draw_plot(map, 0, 0, 1, 1) +
+  draw_plot(legend, 0.2, .65, 0.2, 0.2)
+
+finalPlot
+```
+
+```{r}
+questionposts3 <- read_csv("data/questionposts.csv")
+education <- read.csv(here("data/PregnancyPrevention.csv"))
+```
+
+
+```{r}
+abortion <- questionposts3 %>%
+  filter(grepl("abortion", PostText) | grepl("abortion", CreatedUtc))
+
+abortion <- abortion %>%
+  group_by(StateAbbr) %>%
+  summarise(total = n())
+
+total <- questionposts3 %>%
+  group_by(StateAbbr) %>%
+  summarise(total_qs = n())
+
+total2 <- abortion %>%
+  left_join(total, by = c("StateAbbr" = "StateAbbr")) %>%
+  mutate(normalized_total = total/total_qs)
+
+abortion2 <- states %>%
+  left_join(abortion, by = c("STUSPS" = "StateAbbr"))
+
+abortion2 <- abortion2 %>%
+  inner_join(education, by = c("NAME" = "State"))
+```
+
+```{r}
+total2 <- abortion %>%
+  left_join(total, by = c("StateAbbr" = "StateAbbr")) %>%
+  mutate(normalized_total = log(total/total_qs))
+
+total2 <- total2 %>%
+  inner_join(stateNames, by = c("StateAbbr" = "StateAbbr"))
+
+total2 <- total2 %>%
+  inner_join(education, by = c("StateName" = "State"))
+
+abortion5 <- states %>%
+  left_join(total2, by = c("STUSPS" = "StateAbbr"))
+
+abortion6 <- abortion5 %>%
+filter(STUSPS != "AK" & STUSPS != "HI")
+```
+
+
+```{r}
+stateNames <- clients %>%
+  select(StateName, StateAbbr) %>%
+  unique()
+```
+
+```{r}
+abortion7 <- abortion4 %>%
+  left_join(total, by = c("STUSPS" = "StateAbbr")) %>%
+  mutate(normalized_total = log(total/total_qs))
+```
+
+
+```{r}
+# create classes
+data <- bi_class(abortion7, x = normalized_total, y = Percent, style = "quantile", dim = 3)
+
+# create map
+map <- ggplot() +
+  geom_sf(data = data, mapping = aes(fill = bi_class), color = "white", size = 0.1, show.legend = FALSE) +
+  bi_scale_fill(pal = "DkViolet2", dim = 3) +
+  # labs(
+  #   title = "Num Questions and Pregnancy Education",
+  #   subtitle = "Gray Pink (GrPink) Palette"
+  # ) +
+  bi_theme() + labs(caption = "Percentage of Secondary Schools in Which Teachers Tried to Increase Student Knowledge on Pregnancy Prevention")
+
+legend <- bi_legend(pal = "DkViolet2",
+                    dim = 3,
+                    xlab = "Questions",
+                    ylab = "Education",
+                    size = 8)
+
+# combine map with legend
+finalPlot <- ggdraw() +
+  draw_plot(map, 0, 0, 1, 1) +
+  draw_plot(legend, 0.01, .05, 0.3, 0.3)
+
+finalPlot
+```
+
+
+
+
+```{r}
+total2 <- total2 %>%
+  inner_join(stateNames, by = c("StateAbbr" = "StateAbbr"))
+
+abortion2 <- abortion2 %>%
+  inner_join(education, by = c("StateName" = "State"))
+
+abortion3 <- states %>%
+  st_join(abortion3)
+```
+
+
+```{r}
+abortion3 <- abortion2 %>%
+filter(STUSPS != "AK" & STUSPS != "HI")
+```
+
+```{r}
+abortion4 <- abortion3 %>%
+  select(-geometry) %>%
+  filter(!is.na(total) & !is.na(Percent))
+```
+
+```{r}
+abortion5 <- states %>%
+  left_join(abortion4, by = c("STUSPS" = "StateAbbr"))
+```
